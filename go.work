@@ -1,4 +1,4 @@
-go 1.20
+go 1.23
 
 use (
 	./internal/aiprompt
@@ -6,9 +6,6 @@ use (
 	./internal/badwords_embeddings
 	./builder
 	./pkg/canary
-	./cmd/lambda_keep
-	./cmd/lambda_wall
-	./cmd/lambda_user
 	./internal/embeddings
 	./internal/keep
 	./internal/pii
@@ -24,4 +21,5 @@ use (
 	./internal/huggingface_jailbreak_model
 	./internal/cache
 	./internal/utils
+	./cmd/server
 )

@@ -1,15 +1,14 @@
 MODULES := $(shell (find .  -type f -name '*.go' -maxdepth 2 | sed -r 's|/[^/]+$$||' |cut -c 3-|sort |uniq))
 TEST_MODULES := $(shell (find . -type f -name '*.go' -maxdepth 3 ! -path './test/integration_test_harness/*' | grep "_test" | sed -r 's|/[^/]+$$||' | sort | uniq))
-AWS_MODULES := $(shell cd cmd && find . -type f -name '*.go' -maxdepth 2 | sed -r 's|^\./|cmd/|' | grep "lambda_" | sed -r 's|/[^/]+$$||' | sort | uniq)
 PROJECT_DIR := $(shell pwd)
 API_DIR := $(shell pwd)/api
 
 setup-workspace:
 	if [ -n "$$GITHUB_REF_NAME" ]; then \
-  		echo "Using branch name from GITHUB_REF_NAME env variable..." &&\
-    	export TF_VAR_branch_name=$$GITHUB_REF_NAME; \
+		echo "Using branch name from GITHUB_REF_NAME env variable..." &&\
+        export TF_VAR_branch_name=$$GITHUB_REF_NAME; \
 	else \
-	  	echo "Using branch name from git rev-parse..." &&\
+		echo "Using branch name from git rev-parse..." &&\
 		export TF_VAR_branch_name=$$(git rev-parse --abbrev-ref HEAD); \
 	fi; \
 	if [ "$$TF_VAR_branch_name" = "main" ] && [ "$$INTEGRATION_TEST" != "true" ]; then \
@@ -33,9 +32,7 @@ test: build
 	done
 
 build: generate
-	for aws_module in $(AWS_MODULES) ; do \
-	   cd $$aws_module && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap || exit 1; cd $(PROJECT_DIR) ; \
-	done
+	cd cmd/server && go build
 
 deploy: setup-workspace build
 	export TF_VAR_commit_version=`git rev-parse --short HEAD` &&\
@@ -46,49 +43,37 @@ install:
 	for number in  $(MODULES) ; do \
        cd $$number && go get ./... || exit 1; cd .. ; \
     done
-	for aws_module in $(AWS_MODULES) ; do \
-	   cd $$aws_module && go get ./... || exit 1; cd $(PROJECT_DIR) ; \
-	done
+	cd cmd/server && go get ./...
 
 tidy:
 	for number in $(MODULES); do \
 		cd $$number && go mod tidy || exit 1; cd .. ; \
 	done
-	for aws_module in $(AWS_MODULES) ; do \
-	   cd $$aws_module && go mod tidy || exit 1; cd $(PROJECT_DIR) ; \
-	done
+	cd cmd/server && go mod tidy
 
 upgrade:
 	for number in  $(MODULES) ; do \
-  		printf "Upgrading dependencies for module: %s\n" $$number; \
+		printf "Upgrading dependencies for module: %s\n" $$number; \
 	   cd $$number && go get -u all  || exit 1; cd .. ; \
 	done
-	for aws_module in $(AWS_MODULES) ; do \
-  		printf "Upgrading dependencies for module: %s\n" $$aws_module; \
-	   cd $$aws_module && go get -u all || exit 1; cd $(PROJECT_DIR) ; \
-	done
+	cd cmd/server && go get -u all
 
 clean:
 	for number in  $(MODULES) ; do \
 	   cd $$number && go clean -testcache || exit 1; cd .. ; \
 	done
-	for aws_module in $(AWS_MODULES) ; do \
-	   cd $$aws_module && go clean -testcache || exit 1; cd $(PROJECT_DIR) ; \
-	done
 	cd test/integration_test_harness && go clean -testcache || exit 1; cd $(PROJECT_DIR) ;
+	cd cmd/server && go clean -testcache
 
 generate:
 	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
-	for aws_module in $(AWS_MODULES) ; do \
-	   cd $$aws_module && oapi-codegen -package main -generate types $(API_DIR)/openapi.yml > api.gen.go || exit 1; cd $(PROJECT_DIR); \
-	done
 	oapi-codegen -package integration_test_harness -generate types,client $(API_DIR)/openapi.yml > test/integration_test_harness/api.gen.go
-	oapi-codegen -package main -generate types,client $(API_DIR)/openapi.yml > cmd/lambda_wall/api.gen.go
+	oapi-codegen -package main -generate types,chi-server,spec -o cmd/server/api.gen.go api/openapi.yml
 
 generate_jailbreak:
 	cd builder\
 	 && pip install -r requirements.txt && python3 clean_jailbreaks_into_json.py\
-  	 && python3 jailbreak_embeddings.py && go build -o main && ./main
+	 && python3 jailbreak_embeddings.py && go build -o main && ./main
 
 integration_test:
 	go install github.com/tomwright/dasel/cmd/dasel@latest
