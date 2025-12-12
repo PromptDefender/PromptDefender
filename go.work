@@ -1,25 +1,23 @@
-go 1.23
+go 1.25.3
 
 use (
+	./builder
+	./cmd/server
 	./internal/aiprompt
 	./internal/badwords
 	./internal/badwords_embeddings
-	./builder
-	./pkg/canary
+	./internal/cache
 	./internal/embeddings
+	./internal/huggingface_jailbreak_model
 	./internal/keep
 	./internal/pii
-	./internal/pii_aws
-	./internal/wall
 	./internal/tracer
-	./test/integration_test_harness
-	./internal/base_aws
-	./pkg/request_log
 	./internal/user_repository
-	./internal/user_repository_ddb
-	./internal/sagemaker_jailbreak_model
-	./internal/huggingface_jailbreak_model
-	./internal/cache
+	./internal/user_repository_firestore
+	./internal/pii_google
 	./internal/utils
-	./cmd/server
+	./internal/wall
+	./pkg/canary
+	./pkg/request_log
+	./test/integration_test_harness
 )

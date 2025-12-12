@@ -5,16 +5,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/safetorun/PromptDefender/utils"
-	"github.com/safetorun/PromptDefender/wall"
 	"io"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/safetorun/PromptDefender/utils"
+	"github.com/safetorun/PromptDefender/wall"
 )
 
 const (
-	ApiUrl = "https://api-inference.huggingface.co/models/deepset/deberta-v3-base-injection"
+	ApiUrl = "https://router.huggingface.co/hf-inference/models/protectai/deberta-v3-base-prompt-injection-v2"
 )
 
 type HuggingfaceRemoteApiCallerImpl struct {

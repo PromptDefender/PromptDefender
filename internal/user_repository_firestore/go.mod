@@ -1,6 +1,6 @@
-module github.com/safetorun/PromptDefender/cache
+module github.com/safetorun/PromptDefender/user_repository_firestore
 
-go 1.24.0
+go 1.25.3
 
 require (
 	cloud.google.com/go v0.121.6 // indirect
@@ -35,3 +35,5 @@ require (
 	google.golang.org/grpc v1.77.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
 )
+
+replace github.com/safetorun/PromptDefender/user_repository => ../user_repository

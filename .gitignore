@@ -7,3 +7,11 @@ main
 .vscode/
 /cmd/*/dist/
 /cmd/*/venv/
+*.log
+*.test
+*.out
+cmd/server/server
+/bin/
+server
+
+

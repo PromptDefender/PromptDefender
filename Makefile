@@ -13,14 +13,14 @@ setup-workspace:
 	fi; \
 	if [ "$$TF_VAR_branch_name" = "main" ] && [ "$$INTEGRATION_TEST" != "true" ]; then \
 		echo "On 'main' branch. Using the 'default' workspace..."; \
-		cd terraform && terraform init && terraform workspace select -or-create default || exit 1; \
+		cd terraform/gcp && terraform init && terraform workspace select -or-create default || exit 1; \
 		echo "Workspace $$TF_VAR_branch_name selected."; \
 		terraform workspace show; \
-		cd ..; \
+		cd ../..; \
 	else \
 		echo "Workspace $$TF_VAR_branch_name exists. Selecting it..."; \
 		workspace_name=`echo $$TF_VAR_branch_name | sed 's/[^a-zA-Z0-9-]/-/g' | cut -c 1-20` ; \
-		cd terraform && terraform init && terraform workspace select -or-create  $$workspace_name; \
+		cd terraform/gcp && terraform init && terraform workspace select -or-create  $$workspace_name; \
 		echo "Workspace $$TF_VAR_branch_name selected."; \
 		terraform workspace show; \
 		cd ..; \
@@ -32,12 +32,13 @@ test: build
 	done
 
 build: generate
-	cd cmd/server && go build
+	mkdir -p $(PROJECT_DIR)/bin
+	cd cmd/server && go build -o $(PROJECT_DIR)/bin/server
 
 deploy: setup-workspace build
 	export TF_VAR_commit_version=`git rev-parse --short HEAD` &&\
-	cd terraform && terraform init && terraform apply -auto-approve &&\
-	terraform output -json > terraform_output.json
+	cd terraform/gcp && terraform init && terraform apply -auto-approve &&\
+	terraform output -json > ../../terraform_output.json
 
 install:
 	for number in  $(MODULES) ; do \
@@ -77,21 +78,21 @@ generate_jailbreak:
 
 integration_test:
 	go install github.com/tomwright/dasel/cmd/dasel@latest
-	export URL=`cd terraform && terraform output -json | dasel select -p json '.api_url.value' | tr -d '"'` &&\
-	export DEFENDER_API_KEY=`cd terraform && terraform output -json | dasel select -p json '.api_key_value.value' | tr -d '"'` &&\
+	export URL=`cd terraform/gcp && terraform output -json | dasel select -p json '.api_url.value' | tr -d '"'` &&\
+	export DEFENDER_API_KEY=`cd terraform/gcp && terraform output -json | dasel select -p json '.api_key_value.value' | tr -d '"'` &&\
 	echo "Defender API URL: $$URL" &&\
 	cd test/integration_test_harness && go test -count=1 -v ./...
 
 destroy: setup-workspace
 	export TF_VAR_commit_version=`git rev-parse --short HEAD`;\
-	current_workspace=`cd terraform && terraform workspace show`;\
+	current_workspace=`cd terraform/gcp && terraform workspace show`;\
 	if [ "$$current_workspace" = "default" ]; then \
 		echo "Skipping destruction in default workspace"; \
 	else \
-		cd terraform && terraform init && terraform destroy -auto-approve; \
+		cd terraform/gcp && terraform init && terraform destroy -auto-approve; \
 	fi
 
 load_test:
-	export URL=`cd terraform && terraform output -json | dasel select -p json '.api_url.value' | tr -d '"'` &&\
-	export DEFENDER_API_KEY=`cd terraform && terraform output -json | dasel select -p json '.api_key_value.value' | tr -d '"'` &&\
+	export URL=`cd terraform/gcp && terraform output -json | dasel select -p json '.api_url.value' | tr -d '"'` &&\
+	export DEFENDER_API_KEY=`cd terraform/gcp && terraform output -json | dasel select -p json '.api_key_value.value' | tr -d '"'` &&\
 	cd test/load && k6 run wall_load.js
