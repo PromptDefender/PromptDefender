@@ -31,9 +31,6 @@ type KeepRequest struct {
 
 // KeepResponse defines model for KeepResponse.
 type KeepResponse struct {
-	// Canary The canary string that is used to detect prompt injection.
-	Canary *string `json:"canary,omitempty"`
-
 	// ShieldedPrompt The shielded prompt.
 	ShieldedPrompt string `json:"shielded_prompt"`
 
@@ -75,9 +72,6 @@ type WallRequest struct {
 type WallResponse struct {
 	// ContainsPii Whether the prompt contains PII.
 	ContainsPii *bool `json:"contains_pii,omitempty"`
-
-	// ModifiedPrompt The prompt, modified in some way - e.g. by summarising it as per the configuration specified in the request.
-	ModifiedPrompt *string `json:"modified_prompt,omitempty"`
 
 	// PotentialJailbreak Whether the prompt contains a potential jailbreak.
 	PotentialJailbreak *bool `json:"potential_jailbreak,omitempty"`
