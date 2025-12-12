@@ -3,18 +3,6 @@ TEST_MODULES := $(shell (find . -type f -name '*.go' -maxdepth 3 ! -path './test
 AWS_MODULES := $(shell cd cmd && find . -type f -name '*.go' -maxdepth 2 | sed -r 's|^\./|cmd/|' | grep "lambda_" | sed -r 's|/[^/]+$$||' | sort | uniq)
 PROJECT_DIR := $(shell pwd)
 API_DIR := $(shell pwd)/api
-PYTHON_PACKAGES := $(shell cd cmd && find . -type f -name '*.py' -maxdepth 2 | sed -r 's|^\./|cmd/|' | grep "lambda_" | sed -r 's|/[^/]+$$||' | sort | uniq)
-
-deploy-base-infrastructure:
-	cd terraform-base-infrastructure && terraform init && terraform apply -auto-approve &&\
-	terraform output -json > terraform_output.json
-
-build-python:
-	for python_module in $(PYTHON_PACKAGES); do \
-		bash scripts/build_python.sh $$python_module; \
-	done &&\
-	bash scripts/langchain_layer.sh
-	bash scripts/embeddings_layer.sh
 
 setup-workspace:
 	if [ -n "$$GITHUB_REF_NAME" ]; then \
@@ -44,7 +32,7 @@ test: build
 	   cd $$testable_module && go test -v ./... -cover || exit 1; cd $(PROJECT_DIR) ; \
 	done
 
-build: build-python generate
+build: generate
 	for aws_module in $(AWS_MODULES) ; do \
 	   cd $$aws_module && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o bootstrap || exit 1; cd $(PROJECT_DIR) ; \
 	done
@@ -88,9 +76,6 @@ clean:
 	   cd $$aws_module && go clean -testcache || exit 1; cd $(PROJECT_DIR) ; \
 	done
 	cd test/integration_test_harness && go clean -testcache || exit 1; cd $(PROJECT_DIR) ;
-	for python_module in $(PYTHON_PACKAGES); do \
-		bash scripts/clean_python.sh $$python_module; \
-	done
 
 generate:
 	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
@@ -98,13 +83,12 @@ generate:
 	   cd $$aws_module && oapi-codegen -package main -generate types $(API_DIR)/openapi.yml > api.gen.go || exit 1; cd $(PROJECT_DIR); \
 	done
 	oapi-codegen -package integration_test_harness -generate types,client $(API_DIR)/openapi.yml > test/integration_test_harness/api.gen.go
-	pip install openapi-python-client
+	oapi-codegen -package main -generate types,client $(API_DIR)/openapi.yml > cmd/lambda_wall/api.gen.go
 
 generate_jailbreak:
 	cd builder\
-	 && pip install -r requirements.txt \
-	 && python3 clean_jailbreaks_into_json.py \
-  	 && python3 jailbreak_embeddings.py
+	 && pip install -r requirements.txt && python3 clean_jailbreaks_into_json.py\
+  	 && python3 jailbreak_embeddings.py && go build -o main && ./main
 
 integration_test:
 	go install github.com/tomwright/dasel/cmd/dasel@latest

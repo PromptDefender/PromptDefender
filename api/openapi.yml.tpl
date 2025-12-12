@@ -237,9 +237,6 @@ components:
         - 'shielded_prompt'
         - 'xml_tag'
       properties:
-        canary:
-          type: 'string'
-          description: 'The canary string that is used to detect prompt injection.'
         shielded_prompt:
           type: 'string'
           description: 'The shielded prompt.'
@@ -265,6 +262,3 @@ components:
         suspicious_session:
             type: 'boolean'
             description: 'Whether the session is suspicious.'
-        modified_prompt:
-            type: 'string'
-            description: 'The prompt, modified in some way - e.g. by summarising it as per the configuration specified in the request.'

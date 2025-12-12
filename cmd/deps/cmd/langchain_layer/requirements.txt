@@ -1,3 +1,0 @@
-langchain>=0.2.1
-langchain_openai>=0.1.8
-prompt-defender-llm-defences>=0.1.6

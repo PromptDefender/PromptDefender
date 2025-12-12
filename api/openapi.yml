@@ -20,7 +20,7 @@ paths:
     post:
       x-amazon-apigateway-request-validator : "full"
       x-amazon-apigateway-integration:
-        uri: arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:478910673833:function:feature-remove-old-g-PromptDefender-Wall/invocations
+        uri: arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:478910673833:function:feature-adding-naive-PromptDefender-Wall/invocations
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
         type: "aws_proxy"
@@ -50,7 +50,7 @@ paths:
     post:
       x-amazon-apigateway-request-validator : "full"
       x-amazon-apigateway-integration:
-        uri: arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:478910673833:function:feature-remove-old-g-PromptDefender-Keep/invocations
+        uri: arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:478910673833:function:feature-adding-naive-PromptDefender-Keep/invocations
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
         type: "aws_proxy"
@@ -80,7 +80,7 @@ paths:
   /user/{userId}:
     delete:
       x-amazon-apigateway-integration:
-        uri:  arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:478910673833:function:feature-remove-old-g-PromptDefender-User/invocations
+        uri:  arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:478910673833:function:feature-adding-naive-PromptDefender-User/invocations
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
         type: "aws_proxy"
@@ -105,7 +105,7 @@ paths:
 
     get:
       x-amazon-apigateway-integration:
-        uri:  arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:478910673833:function:feature-remove-old-g-PromptDefender-User/invocations
+        uri:  arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:478910673833:function:feature-adding-naive-PromptDefender-User/invocations
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
         type: "aws_proxy"
@@ -134,7 +134,7 @@ paths:
   /user:
     get:
       x-amazon-apigateway-integration:
-        uri:  arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:478910673833:function:feature-remove-old-g-PromptDefender-User/invocations
+        uri:  arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:478910673833:function:feature-adding-naive-PromptDefender-User/invocations
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
         type: "aws_proxy"
@@ -156,7 +156,7 @@ paths:
           description: 'Internal server error.'
     post:
       x-amazon-apigateway-integration:
-        uri:  arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:478910673833:function:feature-remove-old-g-PromptDefender-User/invocations
+        uri:  arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:478910673833:function:feature-adding-naive-PromptDefender-User/invocations
         passthroughBehavior: "when_no_match"
         httpMethod: "POST"
         type: "aws_proxy"
@@ -237,9 +237,6 @@ components:
         - 'shielded_prompt'
         - 'xml_tag'
       properties:
-        canary:
-          type: 'string'
-          description: 'The canary string that is used to detect prompt injection.'
         shielded_prompt:
           type: 'string'
           description: 'The shielded prompt.'
@@ -265,6 +262,3 @@ components:
         suspicious_session:
             type: 'boolean'
             description: 'Whether the session is suspicious.'
-        modified_prompt:
-            type: 'string'
-            description: 'The prompt, modified in some way - e.g. by summarising it as per the configuration specified in the request.'

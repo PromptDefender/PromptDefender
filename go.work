@@ -1,14 +1,27 @@
 go 1.20
 
 use (
+	./internal/aiprompt
+	./internal/badwords
+	./internal/badwords_embeddings
 	./builder
 	./pkg/canary
+	./cmd/lambda_keep
+	./cmd/lambda_wall
 	./cmd/lambda_user
+	./internal/embeddings
+	./internal/keep
+	./internal/pii
+	./internal/pii_aws
+	./internal/wall
 	./internal/tracer
 	./test/integration_test_harness
 	./internal/base_aws
 	./pkg/request_log
 	./internal/user_repository
 	./internal/user_repository_ddb
+	./internal/sagemaker_jailbreak_model
+	./internal/huggingface_jailbreak_model
+	./internal/cache
 	./internal/utils
 )

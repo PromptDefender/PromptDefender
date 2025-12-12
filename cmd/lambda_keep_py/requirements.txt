@@ -1,4 +1,0 @@
-prompt-defender>=0.1.22
-aws_lambda_powertools>=2.38.1
-pydantic>=2.7.3
-aws-xray-sdk>=2.14.0
