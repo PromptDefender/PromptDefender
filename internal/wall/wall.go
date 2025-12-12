@@ -10,8 +10,9 @@ package wall
 
 import (
 	"fmt"
-	"github.com/safetorun/PromptDefender/cache"
 	"log"
+
+	"github.com/safetorun/PromptDefender/cache"
 
 	"github.com/safetorun/PromptDefender/badwords"
 	"github.com/safetorun/PromptDefender/pii"
@@ -105,7 +106,7 @@ func (m *Wall) CheckWall(check PromptToCheck, t tracer.Tracer) (*CheckResult, er
 			return nil, err
 		}
 	} else {
-		piiResult = &PiiDetectionResult{ContainsPii: false}
+		piiResult = nil
 	}
 
 	if check.XmlTagToCheckFor != nil {

@@ -42,6 +42,7 @@ func (s *GooglePIIScanner) Scan(input string) (*pii.ScanResult, error) {
 				{Name: "PHONE_NUMBER"},
 				{Name: "CREDIT_CARD_NUMBER"},
 				{Name: "US_SOCIAL_SECURITY_NUMBER"},
+				{Name: "PERSON_NAME"},
 				// Add more as needed matching AWS Comprehend coverage roughly
 			},
 			MinLikelihood: dlppb.Likelihood_LIKELY,

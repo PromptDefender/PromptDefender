@@ -1,4 +1,4 @@
-MODULES := $(shell (find .  -type f -name '*.go' -maxdepth 2 | sed -r 's|/[^/]+$$||' |cut -c 3-|sort |uniq))
+MODULES := $(shell (find .  -type f -name '*.go' -maxdepth 4 | sed -r 's|/[^/]+$$||' |cut -c 3-|sort |uniq))
 TEST_MODULES := $(shell (find . -type f -name '*.go' -maxdepth 3 ! -path './test/integration_test_harness/*' | grep "_test" | sed -r 's|/[^/]+$$||' | sort | uniq))
 PROJECT_DIR := $(shell pwd)
 API_DIR := $(shell pwd)/api
@@ -48,7 +48,7 @@ install:
 
 tidy:
 	for number in $(MODULES); do \
-		cd $$number && go mod tidy || exit 1; cd .. ; \
+		cd $$number && go mod tidy || exit 1; cd $(PROJECT_DIR) ; \
 	done
 	cd cmd/server && go mod tidy
 

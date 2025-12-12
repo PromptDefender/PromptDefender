@@ -2,6 +2,8 @@ module github.com/safetorun/PromptDefender/aiprompt
 
 go 1.23.0
 
+require cloud.google.com/go/vertexai v0.15.0
+
 require (
 	cloud.google.com/go v0.121.2 // indirect
 	cloud.google.com/go/aiplatform v1.90.0 // indirect
@@ -10,7 +12,6 @@ require (
 	cloud.google.com/go/compute/metadata v0.7.0 // indirect
 	cloud.google.com/go/iam v1.5.2 // indirect
 	cloud.google.com/go/longrunning v0.6.7 // indirect
-	cloud.google.com/go/vertexai v0.15.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect

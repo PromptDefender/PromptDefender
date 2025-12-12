@@ -14,6 +14,7 @@ import (
 	"github.com/safetorun/PromptDefender/badwords_embeddings"
 	"github.com/safetorun/PromptDefender/cache"
 	"github.com/safetorun/PromptDefender/embeddings"
+	"github.com/safetorun/PromptDefender/huggingface_jailbreak_model"
 	"github.com/safetorun/PromptDefender/keep"
 	"github.com/safetorun/PromptDefender/pii_google"
 	"github.com/safetorun/PromptDefender/user_repository_firestore"
@@ -89,19 +90,14 @@ func main() {
 		// XML Escaping
 		c.XmlEscapingScanner = wall.NewBasicXmlEscapingScaner()
 
-		// Remote Jailbreak Check (Vertex AI can also double as jailbreak checker if prompts are designed for it,
-		// or we use cloud-based content safety APIs.
-		// For now, if we want to replace SageMaker "remote caller", we can use a Vertex AI model
-		// that is fine-tuned for jailbreak detection OR just use Safety Settings in GenerateContent?
-		// The existing interface `RemoteApiCaller` expects a score.
-		// Let's assume we skip SageMaker specific replacement for now unless specified.
-		// Or better: use Vertex AI to classify?
-		// Let's implement a Vertex-based checker if strict replacement is needed.
-		// But the task said "refactor AI models... to Vertex AI".
-		// If we use the generic Vertex AI for checking (like CheckAI), it returns string.
-		// RemoteApiCaller returns a MatchLevel.
-		// For now, let's disable SageMaker injection check if no direct equivalent is ready.
-		// Or re-use VertexAI prompt check?
+		// Remote Jailbreak Check (HuggingFace)
+		huggingFaceToken := os.Getenv("HUGGINGFACE_TOKEN")
+		if huggingFaceToken != "" {
+			hfCaller := huggingface_jailbreak_model.NewRemoteApiCaller(huggingFaceToken)
+			c.RemoteApiCaller = &hfCaller
+		} else {
+			log.Println("Warning: HUGGINGFACE_TOKEN not set, skipping remote jailbreak check")
+		}
 
 		if cacheCollectionName != "" {
 			fc, err := cache.NewFirestore(projectID, cacheCollectionName)
